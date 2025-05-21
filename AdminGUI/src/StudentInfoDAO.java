@@ -41,7 +41,7 @@ public class StudentInfoDAO {
         java.time.LocalDate now = java.time.LocalDate.now();
         String mm = String.format("%02d", now.getMonthValue());
         String yy = String.valueOf(now.getYear()).substring(2);
-        String prefix = mm + yy + "-";
+        String prefix = mm + yy + "_";
 
         String getMaxQuery = "SELECT application_id FROM student_info WHERE application_id LIKE ? ORDER BY application_id DESC LIMIT 1";
         int nextNum = 1;

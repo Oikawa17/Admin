@@ -14,8 +14,6 @@ class ViewFrame extends JFrame {
     private JLabel statusLabel;
 
     public ViewFrame() {
-        JButton addStudentButton = new JButton("Add Student");
-        addStudentButton.addActionListener(e -> new AddStudent(this));
         setTitle("Student Info");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(300, 200);
@@ -25,9 +23,34 @@ class ViewFrame extends JFrame {
         buttonPanel.setLayout(new GridLayout(0, 3, 5, 5));
         statusLabel = new JLabel(" ");
 
-        JScrollPane scrollPane = new JScrollPane(buttonPanel);
-        add(addStudentButton, BorderLayout.NORTH);
+        // --- Top bar with Add Student (75%) and Refresh (25%) ---
+        JPanel topBar = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 0, 0);
 
+        // Add Student button (75%)
+        gbc.gridx = 0;
+        gbc.weightx = 0.75;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JButton addStudentButton = new JButton("Add Student");
+        addStudentButton.setFont(new Font("Arial", Font.BOLD, 16));
+        addStudentButton.addActionListener(e -> new AddStudent(this));
+        topBar.add(addStudentButton, gbc);
+
+        // Refresh button (25%)
+        gbc.gridx = 1;
+        gbc.weightx = 0.25;
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.setFont(new Font("Arial", Font.BOLD, 16));
+        refreshButton.addActionListener(e -> {
+            buttonPanel.removeAll();
+            loadApplicationIdButtons();
+        });
+        topBar.add(refreshButton, gbc);
+
+        JScrollPane scrollPane = new JScrollPane(buttonPanel);
+        add(topBar, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(statusLabel, BorderLayout.SOUTH);
 
@@ -97,12 +120,11 @@ class StudentInfoFrame extends JFrame {
 
         // Open documents button
         JButton showDocsButton = new JButton("Show Documents");
-showDocsButton.setFont(new Font("Arial", Font.PLAIN, 16));
-showDocsButton.setPreferredSize(new Dimension(180, 35));
-showDocsButton.addActionListener(e -> {
-    ShowDocs.openDocumentsFolder(this, info.getOrDefault("application_id", ""));
-});
-        ShowDocs.openDocumentsFolder(this, info.getOrDefault("application_id", ""));
+        showDocsButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        showDocsButton.setPreferredSize(new Dimension(180, 35));
+        showDocsButton.addActionListener(e -> {
+            ShowDocs.openDocumentsFolder(this, info.getOrDefault("application_id", ""));
+        });
 
         // Delete button
         JButton deleteButton = new JButton("Delete");
@@ -115,10 +137,11 @@ showDocsButton.addActionListener(e -> {
             }
         });
 
-        // Top panel for back and delete buttons
+        // Top panel for back, show docs, and delete buttons
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(backButton, BorderLayout.WEST);
         topPanel.add(deleteButton, BorderLayout.EAST);
+        topPanel.add(showDocsButton, BorderLayout.CENTER);
 
         // Get column order from DB
         java.util.List<String> columnOrder = new java.util.ArrayList<>();
